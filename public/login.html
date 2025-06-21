@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Login</h1>
+    <nav>
+      <a href="index.html">Home</a> |
+      <a href="register.html">Register</a>
+    </nav>
+  </header>
+  <main>
+    <div class="login-container">
+      <form id="login-form" class="login-form">
+        <h2>Login to Your Account</h2>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+      </form>
+      <button type="submit" form="login-form" class="login-button">Login</button>
+      <div id="message" class="message"></div>
+    </div>
+  </main>
+  <script>
+    const apiBase = '/api';
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const password = e.target.password.value;
+      try {
+        const res = await fetch(apiBase + '/users/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          document.getElementById('message').innerText = 'Login successful!';
+          // Redirect to home or cart
+          window.location.href = 'index.html';
+        } else {
+          document.getElementById('message').innerText = data.message || 'Login failed';
+        }
+      } catch (err) {
+        document.getElementById('message').innerText = 'Error during login';
+      }
+    });
+  </script>
+</body>
+</html>
